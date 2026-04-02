@@ -1,0 +1,71 @@
+name: legal-review-env
+version: "1.0.0"
+description: >
+  A reinforcement learning environment for AI agents learning to review legal
+  contracts. Agents must identify clauses, flag risks, and propose negotiation
+  strategies across 3 tasks of increasing difficulty. Models a real workflow
+  performed daily by paralegals, lawyers, and compliance teams.
+author: openenv-submission
+tags:
+  - legal
+  - nlp
+  - document-review
+  - compliance
+  - real-world
+tasks:
+  - id: clause_identification
+    name: "Clause Identification"
+    difficulty: easy
+    description: >
+      Given a contract, identify which standard clause types are present
+      (e.g., indemnification, limitation of liability, termination, governing law).
+      Score is precision/recall over the ground-truth clause list.
+  - id: risk_flagging
+    name: "Risk Flagging"
+    difficulty: medium
+    description: >
+      Read a contract and flag specific risky provisions with a severity level
+      (low/medium/high) and a brief rationale. Graded on detection rate,
+      severity accuracy, and rationale quality.
+  - id: negotiation_strategy
+    name: "Negotiation Strategy"
+    difficulty: hard
+    description: >
+      Given a contract with flagged risks, produce a prioritised list of
+      redlines (changes to propose) with justifications. Graded on coverage,
+      priority ordering accuracy, and legal soundness of proposed language.
+observation_space:
+  type: object
+  properties:
+    contract_text:
+      type: string
+      description: Full text of the contract under review
+    task_id:
+      type: string
+      description: Which task the agent is performing
+    step_number:
+      type: integer
+    context:
+      type: object
+      description: Task-specific hints or partial results from prior steps
+action_space:
+  type: object
+  properties:
+    action_type:
+      type: string
+      enum: [submit_clauses, submit_risks, submit_redlines, request_section, done]
+    payload:
+      type: object
+      description: Task-specific structured response payload
+reward:
+  type: continuous
+  range: [0.0, 1.0]
+  description: >
+    Partial-progress reward combining precision, recall, severity accuracy,
+    and rationale quality. Penalises repeated no-op actions (loop_penalty).
+episode_length:
+  max_steps: 10
+api:
+  reset: POST /reset
+  step: POST /step
+  state: GET /state
