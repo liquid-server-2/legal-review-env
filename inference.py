@@ -59,7 +59,7 @@ def log_end(task, steps, final_reward, best_reward):
 # ---------------- ENV ----------------
 def env_reset(task):
     try:
-        r = requests.post(f"{ENV_URL}/reset", json={"task_id": task}, timeout=5)
+        r = requests.post(f"{ENV_URL}/reset", json={"task_id": task}, timeout=1)
         return r.json()
     except Exception as e:
         print(json.dumps({"event": "ERROR", "task_id": task, "error": str(e)}))
@@ -71,7 +71,7 @@ def env_step(action_type, payload):
         r = requests.post(
             f"{ENV_URL}/step",
             json={"action_type": action_type, "payload": payload},
-            timeout=5
+            timeout=1
         )
         return r.json()
     except Exception as e:
