@@ -75,13 +75,19 @@ def list_tasks():
     }
 
 
+from fastapi import Body
+
 @app.post("/reset", response_model=Observation)
-def reset(request: ResetRequest):
+def reset(request: dict = Body(default={})):
     global _env
     valid = ["clause_identification", "risk_flagging", "negotiation_strategy"]
-    if request.task_id not in valid:
+
+    task_id = request.get("task_id", "clause_identification")
+
+    if task_id not in valid:
         raise HTTPException(status_code=400, detail=f"task_id must be one of {valid}")
-    _env = LegalReviewEnv(task_id=request.task_id)
+
+    _env = LegalReviewEnv(task_id=task_id)
     obs = _env.reset()
     return obs
 
