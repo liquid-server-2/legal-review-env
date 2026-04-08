@@ -1,4 +1,4 @@
-print("FORCE NEW BUILD v8")
+print("FORCE NEW BUILD v9")
 import os
 import sys
 import requests
@@ -13,26 +13,16 @@ ENV_URL = os.environ.get("ENV_URL", "http://localhost:7860")
 
 TASKS = ["clause_identification", "risk_flagging", "negotiation_strategy"]
 
-# ---------------- CLIENT ----------------
-client = None
-if OpenAI:
-    try:
-        client = OpenAI(
-            api_key=os.environ["API_KEY"],
-            base_url=os.environ["API_BASE_URL"]
-        )
-        print(f"[INFO] client ready base_url={os.environ['API_BASE_URL']}", flush=True)
-    except Exception as e:
-        print(f"[WARN] client init failed: {e}", flush=True)
-        client = None
-
 # ---------------- LLM ----------------
 def call_llm(system_prompt, user_prompt):
-    if client is None:
-        print("[WARN] client is None, skipping LLM call", flush=True)
+    if OpenAI is None:
+        print("[WARN] openai not installed", flush=True)
         return ""
     try:
-        print(f"[LLM] calling model={MODEL_NAME}", flush=True)
+        api_key = os.environ.get("API_KEY", "")
+        base_url = os.environ.get("API_BASE_URL", "")
+        print(f"[LLM] base_url={base_url} key_set={bool(api_key)}", flush=True)
+        client = OpenAI(api_key=api_key, base_url=base_url)
         res = client.chat.completions.create(
             model=MODEL_NAME,
             messages=[
@@ -188,8 +178,8 @@ def run_task(task):
         done = res.get("done", True)
 
         best = max(best, reward)
-        print(f"[STEP] step={step} reward={reward}", flush=True)  # fixed
-        
+        print(f"[STEP] step={step} reward={reward}", flush=True)
+
         if done:
             break
 
