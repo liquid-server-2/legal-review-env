@@ -1,4 +1,4 @@
-#!/usr/bin/env python3print("NEW VERSION RUNNING")
+print("FORCE NEW BUILD v3")
 import json
 import os
 import sys
