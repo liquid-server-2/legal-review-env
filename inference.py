@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3print("NEW VERSION RUNNING")
 import json
 import os
 import sys
