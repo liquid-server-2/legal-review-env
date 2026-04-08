@@ -69,3 +69,4 @@ api:
   reset: POST /reset
   step: POST /step
   state: GET /state
+entrypoint: python inference.py
