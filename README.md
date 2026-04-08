@@ -1,4 +1,5 @@
 ---
+<<<<<<< HEAD
 title: LegalReviewEnv
 emoji: ⚖️
 colorFrom: blue
@@ -179,3 +180,14 @@ legal-review-env/
 | `HF_TOKEN` | Yes (inference) | API key |
 | `ENV_URL` | No | Environment URL (default: `http://localhost:7860`) |
 | `PORT` | No | Server port (default: `7860`) |
+=======
+title: Legal Review Env New
+emoji: 🐠
+colorFrom: indigo
+colorTo: green
+sdk: docker
+pinned: false
+---
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+>>>>>>> 222786f1fb8af2cb56d042b212875c4d6599278d
