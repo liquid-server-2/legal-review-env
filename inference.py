@@ -1,4 +1,4 @@
-print("FORCE NEW BUILD v7")
+print("FORCE NEW BUILD v8")
 import os
 import sys
 import requests
@@ -8,8 +8,6 @@ try:
 except Exception:
     OpenAI = None
 
-API_BASE_URL = os.environ.get("API_BASE_URL")
-API_KEY = os.environ.get("API_KEY")
 MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o-mini")
 ENV_URL = os.environ.get("ENV_URL", "http://localhost:7860")
 
@@ -17,9 +15,13 @@ TASKS = ["clause_identification", "risk_flagging", "negotiation_strategy"]
 
 # ---------------- CLIENT ----------------
 client = None
-if OpenAI and API_BASE_URL and API_KEY:
+if OpenAI:
     try:
-        client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+        client = OpenAI(
+            api_key=os.environ["API_KEY"],
+            base_url=os.environ["API_BASE_URL"]
+        )
+        print(f"[INFO] client ready base_url={os.environ['API_BASE_URL']}", flush=True)
     except Exception as e:
         print(f"[WARN] client init failed: {e}", flush=True)
         client = None
@@ -27,8 +29,10 @@ if OpenAI and API_BASE_URL and API_KEY:
 # ---------------- LLM ----------------
 def call_llm(system_prompt, user_prompt):
     if client is None:
+        print("[WARN] client is None, skipping LLM call", flush=True)
         return ""
     try:
+        print(f"[LLM] calling model={MODEL_NAME}", flush=True)
         res = client.chat.completions.create(
             model=MODEL_NAME,
             messages=[
@@ -38,6 +42,7 @@ def call_llm(system_prompt, user_prompt):
             temperature=0.2,
             max_tokens=1000
         )
+        print(f"[LLM] response received", flush=True)
         return res.choices[0].message.content or ""
     except Exception as e:
         print(f"[WARN] LLM call failed: {e}", flush=True)
@@ -116,7 +121,6 @@ def get_fallback_action(task):
 def parse_action(llm_output, task):
     import json
     try:
-        # strip markdown code fences if present
         cleaned = llm_output.strip()
         if cleaned.startswith("```"):
             cleaned = cleaned.split("```")[1]
@@ -184,8 +188,8 @@ def run_task(task):
         done = res.get("done", True)
 
         best = max(best, reward)
-        print(f"[STEP] step={step} action={action['action_type']} reward={reward}", flush=True)
-
+        print(f"[STEP] step={step} reward={reward}", flush=True)  # fixed
+        
         if done:
             break
 
