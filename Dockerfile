@@ -1,5 +1,5 @@
 FROM python:3.11-slim
-
+RUN echo "force rebuild v4"
 # HF Spaces convention: port 7860
 ENV PORT=7860
 ENV PYTHONUNBUFFERED=1
